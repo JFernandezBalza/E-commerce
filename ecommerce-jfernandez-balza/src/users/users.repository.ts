@@ -1,0 +1,61 @@
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from './users.entity';
+
+@Injectable()
+export class UsersRepository {
+  constructor(
+    @InjectRepository(User) private usersRepository: Repository<User>,
+  ) {}
+
+  async getUsers(): Promise<Omit<User, `password`>[]> {
+    const users = await this.usersRepository.find();
+
+    const userOutPass = users.map((user) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { password, ...cleanUser } = user;
+      return cleanUser;
+    });
+    return userOutPass;
+  }
+  async getUserById(id: string): Promise<Omit<User, `password`>> {
+    const userFound = await this.usersRepository.findOne({
+      where: { id },
+      relations: {
+        orders: true,
+      },
+    });
+
+    if (!userFound)
+      throw new NotFoundException(`No se encontro el usuario con ID ${id}`);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...userFoundPass } = userFound;
+
+    return userFoundPass;
+  }
+  async createUser(user: User): Promise<string> {
+    const newUser = await this.usersRepository.save(user);
+    return newUser.id;
+  }
+  async updateUser(id: string, user: User): Promise<string> {
+    await this.usersRepository.update(id, user);
+
+    const updateUser = await this.usersRepository.findOneBy({ id });
+    return updateUser.id;
+  }
+
+  async deleteUser(id: string): Promise<string> {
+    const user = await this.usersRepository.findOneBy({ id });
+
+    if (!user) {
+      throw new NotFoundException(`No se encontro el usuario con ID ${id}`);
+    }
+    await this.usersRepository.remove(user);
+    return user.id;
+  }
+
+  async foundEmail(email: string): Promise<User> {
+    return await this.usersRepository.findOne({ where: { email } });
+  }
+}
