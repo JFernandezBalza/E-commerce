@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.services';
 import { AuthGuard } from '../auth/guards/auth.guard';
-import { User } from './users.entity';
+import { CreateUserDto } from 'src/dtos/users.dto';
 
 @Controller('users')
 export class UsersControllers {
@@ -28,13 +28,13 @@ export class UsersControllers {
   }
 
   @Post()
-  createUser(@Body() newUser: User) {
+  createUser(@Body() newUser: CreateUserDto) {
     return this.usersService.createUserService(newUser);
   }
 
   @Put(':id')
   @UseGuards(AuthGuard)
-  updateUser(@Param('id') id: string, @Body() updateUser: User) {
+  updateUser(@Param('id') id: string, @Body() updateUser: CreateUserDto) {
     return this.usersService.updateUserService(id, updateUser);
   }
 

@@ -1,20 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
-import { User } from './users.entity';
+import { CreateUserDto } from 'src/dtos/users.dto';
 
 @Injectable()
 export class UsersService {
   constructor(private readonly usersRepository: UsersRepository) {}
-  async getUsersService(): Promise<Omit<User, `password`>[]> {
+  async getUsersService() {
     return await this.usersRepository.getUsers();
   }
-  async getUserByIdService(id: string): Promise<Omit<User, `password`>> {
+  async getUserByIdService(id: string) {
     return await this.usersRepository.getUserById(id);
   }
-  async createUserService(newUser: User): Promise<string> {
+  async createUserService(newUser: CreateUserDto): Promise<string> {
     return await this.usersRepository.createUser(newUser);
   }
-  async updateUserService(id: string, updateUser: User): Promise<string> {
+  async updateUserService(
+    id: string,
+    updateUser: CreateUserDto,
+  ): Promise<string> {
     return await this.usersRepository.updateUser(id, updateUser);
   }
 
