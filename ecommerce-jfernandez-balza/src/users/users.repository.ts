@@ -37,6 +37,7 @@ export class UsersRepository {
   }
   async createUser(user: CreateUserDto): Promise<string> {
     const newUser = await this.usersRepository.save(user);
+    console.log(newUser);
     return newUser.id;
   }
   async updateUser(id: string, user: CreateUserDto): Promise<string> {
@@ -56,7 +57,7 @@ export class UsersRepository {
     return user.id;
   }
 
-  async foundEmail(email: string): Promise<User> {
+  async foundEmail(email: string) {
     return await this.usersRepository.findOne({ where: { email } });
   }
 }

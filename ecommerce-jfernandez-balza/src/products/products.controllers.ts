@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseUUIDPipe,
   Post,
   Put,
   UseGuards,
@@ -25,7 +26,7 @@ export class ProductsControllers {
     return this.productsService.seedProducts();
   }
   @Get(':id')
-  getProductById(@Param('id') id: string): Promise<Product> {
+  getProductById(@Param('id', ParseUUIDPipe) id: string): Promise<Product> {
     return this.productsService.getProductByIdService(id);
   }
   @Post()
@@ -35,13 +36,16 @@ export class ProductsControllers {
   }
   @Put(':id')
   @UseGuards(AuthGuard)
-  updateProduct(@Param('id') id: string, @Body() productData: Product) {
+  updateProduct(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() productData: Product,
+  ) {
     return this.productsService.updateProductService(id, productData);
   }
 
   @Delete(':id')
   @UseGuards(AuthGuard)
-  deleteUser(@Param('id') id: string) {
+  deleteUser(@Param('id', ParseUUIDPipe) id: string) {
     return this.productsService.deleteProductService(id);
   }
 }
