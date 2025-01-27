@@ -2,7 +2,6 @@ import {
   Controller,
   Get,
   Param,
-  Post,
   Body,
   Put,
   Delete,
@@ -28,10 +27,10 @@ export class UsersControllers {
     return this.usersService.getUserByIdService(id);
   }
 
-  @Post()
-  createUser(@Body() newUser: CreateUserDto) {
-    return this.usersService.createUserService(newUser);
-  }
+  // @Post()
+  // createUser(@Body() newUser: CreateUserDto) {
+  //   return this.usersService.createUserService(newUser);
+  // }
 
   @Put(':id')
   @UseGuards(AuthGuard)

@@ -35,10 +35,10 @@ export class UsersRepository {
 
     return userFoundPass;
   }
-  async createUser(user: CreateUserDto): Promise<string> {
+  async createUser(user: Partial<CreateUserDto>): Promise<User> {
     const newUser = await this.usersRepository.save(user);
     console.log(newUser);
-    return newUser.id;
+    return newUser;
   }
   async updateUser(id: string, user: CreateUserDto): Promise<string> {
     await this.usersRepository.update(id, user);
@@ -57,7 +57,7 @@ export class UsersRepository {
     return user.id;
   }
 
-  async foundEmail(email: string) {
+  async findUserByEmail(email: string) {
     return await this.usersRepository.findOne({ where: { email } });
   }
 }
