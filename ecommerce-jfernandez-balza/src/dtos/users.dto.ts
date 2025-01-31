@@ -1,5 +1,6 @@
 import {
   IsEmail,
+  IsEmpty,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -60,4 +61,7 @@ export class CreateUserDto {
   @MinLength(5)
   @MaxLength(20)
   city?: string;
+
+  @IsEmpty()
+  isAdmin?: boolean;
 }

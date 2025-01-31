@@ -20,7 +20,7 @@ export class UsersRepository {
     });
     return userOutPass;
   }
-  async getUserById(id: string): Promise<Omit<User, `password`>> {
+  async getUserById(id: string): Promise<Partial<User>> {
     const userFound = await this.usersRepository.findOne({
       where: { id },
       relations: {
@@ -31,9 +31,9 @@ export class UsersRepository {
     if (!userFound)
       throw new NotFoundException(`No se encontro el usuario con ID ${id}`);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...userFoundPass } = userFound;
+    const { password, isAdmin, ...cleanUser } = userFound;
 
-    return userFoundPass;
+    return cleanUser;
   }
   async createUser(user: Partial<CreateUserDto>): Promise<User> {
     const newUser = await this.usersRepository.save(user);

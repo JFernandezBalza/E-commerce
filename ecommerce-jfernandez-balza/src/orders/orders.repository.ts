@@ -74,7 +74,7 @@ export class OrdersRepository {
       }),
     );
     const orderDetail = new OrderDetail();
-    orderDetail.price = Number(Number(totalPrice.toFixed(2)));
+    orderDetail.price = Number(totalPrice.toFixed(2));
     orderDetail.products = productsArray;
     orderDetail.order = newOrder;
 

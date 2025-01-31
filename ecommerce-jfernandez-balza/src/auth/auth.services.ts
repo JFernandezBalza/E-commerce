@@ -20,9 +20,10 @@ export class AuthService {
     const payload = {
       id: user.id,
       email: user.email,
+      isAdmin: user.isAdmin,
     };
     console.log(`Generated token payload:`, payload);
-    const token = this.jwtService.sign(payload);
+    const token = this.jwtService.sign(payload, { expiresIn: '1h' });
     return {
       token,
       message: 'Usuario loggeado correctamente',

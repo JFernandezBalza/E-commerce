@@ -11,13 +11,17 @@ import {
 import { UsersService } from './users.services';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { CreateUserDto } from 'src/dtos/users.dto';
+import { Roles } from 'src/decorators/roles';
+import { Role } from 'src/roles.enum';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 
 @Controller('users')
 export class UsersControllers {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  @UseGuards(AuthGuard)
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, RolesGuard)
   getUsers() {
     return this.usersService.getUsersService();
   }
