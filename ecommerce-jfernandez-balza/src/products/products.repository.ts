@@ -26,7 +26,7 @@ export class ProductsRepository {
     }
     return producFound;
   }
-  async createProduct(productData: Product): Promise<string> {
+  async createProduct(productData: Partial<Product>): Promise<string> {
     const newProduct = await this.productRepository.save(productData);
     return newProduct.id;
   }

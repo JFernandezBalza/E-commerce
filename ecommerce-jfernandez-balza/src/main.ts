@@ -18,6 +18,7 @@ async function bootstrap() {
       'API para gestionar una E-commerce para el M4 en la especializaciòn de Backend',
     )
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);
