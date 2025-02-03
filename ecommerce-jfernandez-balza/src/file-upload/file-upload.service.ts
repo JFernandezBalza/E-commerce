@@ -14,11 +14,11 @@ export class FileUploadService {
 
   async uploadProductImage(file: Express.Multer.File, productId: string) {
     const product = await this.productsRepository.findOneBy({ id: productId });
+
     if (!product) {
       throw new NotFoundException('Producto no encontrado');
     }
     const uploadedImage = await this.fileUploadRepository.uploadImage(file);
-    console.log(uploadedImage);
 
     await this.productsRepository.update(product.id, {
       imgUrl: uploadedImage.secure_url,

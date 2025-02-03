@@ -25,6 +25,7 @@ export class AuthGuard implements CanActivate {
     console.log('Token extraído:', token);
 
     if (!token) throw new UnauthorizedException('No hay token de autorizacion');
+
     try {
       const secret = process.env.JWT_SECRET;
       const payload = this.jwtService.verify(token, { secret });

@@ -15,7 +15,7 @@ async function bootstrap() {
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Ecommerce JFernandez')
     .setDescription(
-      'API para gestionar una E-commerce para el M4 en la especializaciòn de Backend',
+      'API para gestionar una E-commerce en la especializaciòn de Backend del M4',
     )
     .setVersion('1.0')
     .addBearerAuth()

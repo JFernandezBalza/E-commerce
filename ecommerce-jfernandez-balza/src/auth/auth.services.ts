@@ -14,6 +14,7 @@ export class AuthService {
     const user = await this.userRepository.findUserByEmail(email);
 
     const isPasswordValidated = await bcrypt.compare(password, user?.password);
+
     if (!user || !isPasswordValidated) {
       throw new BadRequestException('Email o Password incorrectos');
     }
@@ -22,7 +23,7 @@ export class AuthService {
       email: user.email,
       isAdmin: user.isAdmin,
     };
-    console.log(`Generated token payload:`, payload);
+
     const token = this.jwtService.sign(payload, { expiresIn: '1h' });
     return {
       token,
@@ -43,8 +44,10 @@ export class AuthService {
     }
     const newUser = { ...user, password: hashedPassword };
     const saveUser = await this.userRepository.createUser(newUser);
+
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...userWhithoutPassword } = saveUser;
+
     return userWhithoutPassword;
   }
 }
