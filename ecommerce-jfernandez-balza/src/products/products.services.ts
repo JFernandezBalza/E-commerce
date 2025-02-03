@@ -5,8 +5,11 @@ import { Product } from './products.entity';
 @Injectable()
 export class ProductsService {
   constructor(private readonly productsRepository: ProductsRepository) {}
-  async getProductsService(): Promise<Product[]> {
-    return await this.productsRepository.getProducts();
+  async getProductsService(
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<{ data: Product[]; total: number }> {
+    return await this.productsRepository.getProducts(page, limit);
   }
   async getProductByIdService(id: string): Promise<Product> {
     return await this.productsRepository.getProductById(id);

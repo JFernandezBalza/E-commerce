@@ -10,15 +10,27 @@ export class UsersRepository {
     @InjectRepository(User) private usersRepository: Repository<User>,
   ) {}
 
-  async getUsers(): Promise<Omit<User, `password`>[]> {
-    const users = await this.usersRepository.find();
+  async getUsers(
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<{ data: Omit<User, `password`>[]; total: number }> {
+    page = Math.max(1, page);
+    limit = Math.min(Math.max(1, limit), 10);
+
+    const [users, total] = await this.usersRepository.findAndCount({
+      skip: (page - 1) * limit,
+      take: limit,
+    });
 
     const userOutPass = users.map((user) => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...cleanUser } = user;
       return cleanUser;
     });
-    return userOutPass;
+    return {
+      data: userOutPass,
+      total,
+    };
   }
   async getUserById(id: string): Promise<Partial<User>> {
     const userFound = await this.usersRepository.findOne({

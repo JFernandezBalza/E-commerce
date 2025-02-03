@@ -14,8 +14,16 @@ export class ProductsRepository {
     private categoryRepository: Repository<Category>,
   ) {}
 
-  async getProducts(): Promise<Product[]> {
-    return this.productRepository.find();
+  async getProducts(
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<{ data: Product[]; total: number }> {
+    const [products, total] = await this.productRepository.findAndCount({
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    return { data: products, total };
   }
   async getProductById(id: string): Promise<Product> {
     const producFound = this.productRepository.findOne({

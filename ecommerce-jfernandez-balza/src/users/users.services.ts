@@ -6,8 +6,8 @@ import { User } from './users.entity';
 @Injectable()
 export class UsersService {
   constructor(private readonly usersRepository: UsersRepository) {}
-  async getUsersService() {
-    return await this.usersRepository.getUsers();
+  async getUsersService(page: number = 1, limit: number = 10) {
+    return await this.usersRepository.getUsers(page, limit);
   }
   async getUserByIdService(id: string) {
     return await this.usersRepository.getUserById(id);

@@ -7,6 +7,7 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ProductsService } from './products.services';
@@ -23,8 +24,13 @@ export class ProductsControllers {
   constructor(private readonly productsService: ProductsService) {}
 
   @Get()
-  getProductsService(): Promise<Product[]> {
-    return this.productsService.getProductsService();
+  getProductsService(
+    @Query(`page`) page: string,
+    @Query(`limit`) limit: string,
+  ): Promise<{ data: Product[]; total: number }> {
+    const pageNumber = parseInt(page) || 1;
+    const limitNumber = parseInt(limit) || 10;
+    return this.productsService.getProductsService(pageNumber, limitNumber);
   }
   @Get('seeder')
   seedProducts() {

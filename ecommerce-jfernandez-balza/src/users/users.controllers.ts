@@ -7,6 +7,7 @@ import {
   Delete,
   UseGuards,
   ParseUUIDPipe,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.services';
 import { AuthGuard } from '../auth/guards/auth.guard';
@@ -24,8 +25,10 @@ export class UsersControllers {
   @Get()
   @Roles(Role.Admin)
   @UseGuards(AuthGuard, RolesGuard)
-  getUsers() {
-    return this.usersService.getUsersService();
+  getUsers(@Query(`page`) page: string, @Query(`limit`) limit: string) {
+    const pageNumber = parseInt(page) || 1;
+    const limitNumber = parseInt(limit) || 10;
+    return this.usersService.getUsersService(pageNumber, limitNumber);
   }
   @ApiBearerAuth()
   @Get(':id')
