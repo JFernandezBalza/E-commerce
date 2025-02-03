@@ -10,8 +10,10 @@ import {
 import { OrdersService } from './order.services';
 import { CreateOrderDto } from 'src/dtos/orders.dto';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { ApiTags } from '@nestjs/swagger';
 
-@Controller(`orders`)
+@ApiTags('Orders')
+@Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 

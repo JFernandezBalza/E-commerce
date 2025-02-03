@@ -2,17 +2,28 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { LoggerMiddleware } from './middleware/logger.middleware';
 import { ValidationPipe } from '@nestjs/common';
-// import { auth } from 'express-openid-connect';
-// import { config as auth0Config} from "./config/auth0.config"
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const loggerMiddleware = new LoggerMiddleware();
   app.use(loggerMiddleware.use);
-  // app.use(auth{auth0Config});
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('Ecommerce JFernandez')
+    .setDescription(
+      'API para gestionar una E-commerce para el M4 en la especializaciòn de Backend',
+    )
+    .setVersion('1.0')
+    .build();
+
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+
+  SwaggerModule.setup('api', app, document);
+
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
