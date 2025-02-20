@@ -12,10 +12,10 @@ export class UsersRepository {
 
   async getUsers(
     page: number = 1,
-    limit: number = 10,
+    limit: number = 5,
   ): Promise<{ data: Omit<User, `password`>[]; total: number }> {
     page = Math.max(1, page);
-    limit = Math.min(Math.max(1, limit), 10);
+    limit = Math.min(Math.max(1, limit), 5);
 
     const [users, total] = await this.usersRepository.findAndCount({
       skip: (page - 1) * limit,
@@ -52,11 +52,15 @@ export class UsersRepository {
     console.log(newUser);
     return newUser;
   }
-  async updateUser(id: string, user: CreateUserDto): Promise<string> {
-    await this.usersRepository.update(id, user);
 
-    const updateUser = await this.usersRepository.findOneBy({ id });
-    return updateUser.id;
+  async updateUser(id: string, user: CreateUserDto): Promise<string> {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { passwordConfirm, ...userData } = user;
+
+    await this.usersRepository.update(id, userData);
+
+    const updatedUser = await this.usersRepository.findOneBy({ id });
+    return updatedUser.id;
   }
 
   async deleteUser(id: string): Promise<string> {
@@ -66,7 +70,7 @@ export class UsersRepository {
       throw new NotFoundException(`No se encontro el usuario con ID ${id}`);
     }
     await this.usersRepository.remove(user);
-    return user.id;
+    return user.id, `Usuario Eliminado con ID ${id}`;
   }
 
   async findUserByEmail(email: string) {

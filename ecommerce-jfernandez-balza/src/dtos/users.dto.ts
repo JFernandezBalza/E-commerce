@@ -1,6 +1,7 @@
 import {
   IsEmail,
   IsEmpty,
+  IsInt,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -21,6 +22,7 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   @IsEmail()
+  @MaxLength(50)
   email: string;
 
   @IsNotEmpty()
@@ -48,6 +50,7 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   @IsNumber()
+  @IsInt()
   phone: number;
 
   @IsOptional()
