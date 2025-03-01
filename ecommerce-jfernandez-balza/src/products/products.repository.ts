@@ -4,6 +4,7 @@ import { preload } from 'src/helpers/preload';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from 'src/entities/categories.entity';
 import { Repository } from 'typeorm';
+import { UpdateProductDto } from 'src/dtos/product.dto';
 
 @Injectable()
 export class ProductsRepository {
@@ -26,7 +27,7 @@ export class ProductsRepository {
     return { data: products, total };
   }
   async getProductById(id: string): Promise<Product> {
-    const producFound = this.productRepository.findOne({
+    const producFound = await this.productRepository.findOne({
       where: { id },
     });
     if (!producFound) {
@@ -38,10 +39,38 @@ export class ProductsRepository {
     const newProduct = await this.productRepository.save(productData);
     return newProduct.id;
   }
-  async updateProduct(id: string, product: Partial<Product>): Promise<string> {
-    await this.productRepository.update(id, product);
+  async updateProduct(id: string, product: UpdateProductDto): Promise<string> {
+    const category = await this.categoryRepository.findOneBy({
+      id: product.categoryId,
+    });
+    if (!category) {
+      throw new NotFoundException(
+        `Categoria con ID ${product.categoryId} no encontrada `,
+      );
+    }
+    const result = await this.productRepository
+      .createQueryBuilder()
+      .update(Product)
+      .set({
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        stock: product.stock,
+        imgUrl: product.imgUrl,
+        category: category,
+      })
+      .where('id= :id', { id })
+      .execute();
 
+    if (result.affected === 0) {
+      throw new NotFoundException(`Product con ID ${id} no encontrado`);
+    }
     const updateProduct = await this.productRepository.findOneBy({ id });
+    if (!updateProduct) {
+      throw new NotFoundException(
+        `Producto con ID ${id} no encontrado despues de actualizar`,
+      );
+    }
     return updateProduct.id;
   }
 

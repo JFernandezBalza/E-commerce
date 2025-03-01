@@ -17,6 +17,7 @@ import { Roles } from 'src/decorators/roles';
 import { Role } from 'src/roles.enum';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { UpdateProductDto } from 'src/dtos/product.dto';
 
 @ApiTags('Products')
 @Controller('products')
@@ -52,7 +53,7 @@ export class ProductsControllers {
   @UseGuards(AuthGuard, RolesGuard)
   updateProduct(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() productData: Product,
+    @Body() productData: UpdateProductDto,
   ) {
     return this.productsService.updateProductService(id, productData);
   }
