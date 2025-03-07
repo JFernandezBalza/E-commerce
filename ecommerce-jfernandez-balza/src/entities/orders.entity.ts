@@ -9,6 +9,12 @@ import {
 import { OrderDetail } from './orderDetail.entity';
 import { User } from 'src/users/users.entity';
 
+export enum OrderStatus {
+  PENDING = 'pending',
+  CANCELLED = 'cancelled',
+  COMPLETED = 'completed',
+}
+
 @Entity({
   name: `orders`,
 })
@@ -18,6 +24,13 @@ export class Order {
 
   @Column()
   date: Date;
+
+  @Column({
+    type: 'enum',
+    enum: OrderStatus,
+    default: OrderStatus.PENDING,
+  })
+  status: OrderStatus;
 
   @OneToOne(() => OrderDetail, (OrderDetails) => OrderDetails.order)
   orderDetails: OrderDetail;

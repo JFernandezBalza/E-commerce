@@ -13,4 +13,8 @@ export class OrdersService {
   getOrder(id: string) {
     return this.ordersRepository.getOrder(id);
   }
+
+  ordencancell(id: string) {
+    return this.ordersRepository.cancelOrder(id);
+  }
 }

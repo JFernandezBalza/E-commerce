@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { OrderDetail } from 'src/entities/orderDetail.entity';
-import { Order } from 'src/entities/orders.entity';
+import { Order, OrderStatus } from 'src/entities/orders.entity';
 import { Product } from 'src/products/products.entity';
 import { User } from 'src/users/users.entity';
 import { Repository } from 'typeorm';
@@ -86,5 +86,25 @@ export class OrdersRepository {
         orderDetails: true,
       },
     });
+  }
+  async cancelOrder(id: string): Promise<Order> {
+    const order = await this.ordersRepository.findOne({
+      where: { id },
+      relations: { orderDetails: { products: true } },
+    });
+
+    if (!order) {
+      throw new NotFoundException(`No se encontró la orden con el ID: ${id}`);
+    }
+
+    if (order.status === OrderStatus.CANCELLED) {
+      throw new Error(`La orden con ID ${id} ya está cancelada`); // Puedes usar una excepción HTTP más adecuada
+    }
+    for (const product of order.orderDetails.products) {
+      await this.productsRepository.increment({ id: product.id }, 'stock', 1); // Incrementa el stock en 1
+    }
+
+    order.status = OrderStatus.CANCELLED;
+    return this.ordersRepository.save(order);
   }
 }

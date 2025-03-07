@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseUUIDPipe,
@@ -30,5 +31,12 @@ export class OrdersController {
   @UseGuards(AuthGuard)
   getOrder(@Param(`id`, ParseUUIDPipe) orderId: string) {
     return this.ordersService.getOrder(orderId);
+  }
+
+  @ApiBearerAuth()
+  @Delete(`:id`)
+  @UseGuards(AuthGuard)
+  ordercancell(@Param(`id`, ParseUUIDPipe) orderId: string) {
+    return this.ordersService.ordencancell(orderId);
   }
 }
