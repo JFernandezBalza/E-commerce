@@ -8,13 +8,7 @@ import helmet from 'helmet';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Configuración de seguridad básica primero
-  app.use(helmet());
-  app.enableCors();
-  app.use(express.json({ limit: '50mb' }));
-  app.use(express.urlencoded({ extended: true, limit: '50mb' }));
-  
-  // Configuración de Swagger
+  // Configuración de Swagger primero
   const config = new DocumentBuilder()
     .setTitle('E-commerce API')
     .setDescription('API Documentation for the E-commerce platform')
@@ -28,6 +22,17 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
+
+  // Configuración de seguridad después de Swagger
+  app.use(helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+    xssFilter: false,
+  }));
+  
+  app.enableCors();
+  app.use(express.json({ limit: '50mb' }));
+  app.use(express.urlencoded({ extended: true, limit: '50mb' }));
   
   // Validación global de DTOs
   app.useGlobalPipes(new ValidationPipe({
