@@ -4,53 +4,44 @@ import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as express from 'express';
 import helmet from 'helmet';
-import rateLimit from 'express-rate-limit';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // Configuración de seguridad básica primero
+  app.use(helmet({
+    contentSecurityPolicy: process.env.NODE_ENV === 'production' ? undefined : false,
+  }));
+  app.enableCors();
+  app.use(express.json({ limit: '50mb' }));
+  app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+  
   // Configuración de Swagger
   const config = new DocumentBuilder()
     .setTitle('E-commerce API')
     .setDescription('API para el E-commerce')
     .setVersion('1.0')
     .addBearerAuth()
+    .addServer('https://e-commerce-nemn.onrender.com', 'Producción')
+    .addServer('http://localhost:3000', 'Local')
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, document);
-
-  // Middleware de seguridad
-  app.use(helmet());
-  
-  // Rate limiting
-  app.use(
-    rateLimit({
-      windowMs: 15 * 60 * 1000, // 15 minutos
-      max: 100, // límite de 100 solicitudes por ventana por IP
-    }),
-  );
-
-  // CORS configuration
-  app.enableCors({
-    origin: process.env.NODE_ENV === 'production' 
-      ? ['https://your-frontend-domain.com'] // Actualiza esto con tu dominio frontend
-      : 'http://localhost:3000',
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true,
+  SwaggerModule.setup('docs', app, document, {
+    customSiteTitle: 'E-commerce API Documentation',
+    customfavIcon: 'https://nestjs.com/img/logo_text.svg',
+    customJs: [
+      'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-bundle.min.js',
+    ],
+    customCssUrl: [
+      'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css',
+    ],
   });
-
-  app.use(express.json({ limit: '50mb' }));
-  app.use(express.urlencoded({ extended: true, limit: '50mb' }));
-
-  // Validación global
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
-    }),
-  );
+  
+  // Validación global de DTOs
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true,
+    transform: true,
+  }));
 
   // Puerto dinámico para Render
   const port = process.env.PORT || 3000;
