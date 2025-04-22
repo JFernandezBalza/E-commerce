@@ -10,7 +10,8 @@ async function bootstrap() {
 
   // Configuración de seguridad básica primero
   app.use(helmet({
-    contentSecurityPolicy: process.env.NODE_ENV === 'production' ? undefined : false,
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
   }));
   app.enableCors();
   app.use(express.json({ limit: '50mb' }));
@@ -27,14 +28,14 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document, {
+    explorer: true,
+    swaggerOptions: {
+      persistAuthorization: true,
+    },
     customSiteTitle: 'E-commerce API Documentation',
     customfavIcon: 'https://nestjs.com/img/logo_text.svg',
-    customJs: [
-      'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-bundle.min.js',
-    ],
-    customCssUrl: [
-      'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css',
-    ],
+    customJs: [],
+    customCssUrl: []
   });
   
   // Validación global de DTOs
