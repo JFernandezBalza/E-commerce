@@ -1,13 +1,23 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { LoggerMiddleware } from './middleware/logger.middleware';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as express from 'express';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Configuración de Swagger
+  const config = new DocumentBuilder()
+    .setTitle('E-commerce API')
+    .setDescription('API para el E-commerce')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('docs', app, document);
 
   // Middleware de seguridad
   app.use(helmet());
@@ -30,8 +40,8 @@ async function bootstrap() {
     credentials: true,
   });
 
-  const loggerMiddleware = new LoggerMiddleware();
-  app.use(loggerMiddleware.use);
+  app.use(express.json({ limit: '50mb' }));
+  app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
   // Validación global
   app.useGlobalPipes(
@@ -41,21 +51,6 @@ async function bootstrap() {
       transform: true,
     }),
   );
-
-  // Swagger configuration
-  if (process.env.NODE_ENV !== 'production') {
-    const swaggerConfig = new DocumentBuilder()
-      .setTitle('Ecommerce JFernandez')
-      .setDescription(
-        'API para gestionar una E-commerce en la especializaciòn de Backend del M4',
-      )
-      .setVersion('1.0')
-      .addBearerAuth()
-      .build();
-
-    const document = SwaggerModule.createDocument(app, swaggerConfig);
-    SwaggerModule.setup('api', app, document);
-  }
 
   // Puerto dinámico para Render
   const port = process.env.PORT || 3000;
