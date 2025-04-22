@@ -9,10 +9,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // Configuración de seguridad básica primero
-  app.use(helmet({
-    contentSecurityPolicy: false,
-    crossOriginEmbedderPolicy: false,
-  }));
+  app.use(helmet());
   app.enableCors();
   app.use(express.json({ limit: '50mb' }));
   app.use(express.urlencoded({ extended: true, limit: '50mb' }));
@@ -27,26 +24,10 @@ async function bootstrap() {
     .addTag('products', 'Product operations')
     .addTag('orders', 'Order management')
     .addBearerAuth()
-    .addServer('https://e-commerce-nemn.onrender.com', 'Production')
-    .addServer('http://localhost:3000', 'Local')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  
-  app.use('/docs', express.static('node_modules/swagger-ui-dist/', {
-    index: false
-  }));
-
-  SwaggerModule.setup('docs', app, document, {
-    explorer: true,
-    swaggerOptions: {
-      persistAuthorization: true,
-      docExpansion: 'list',
-      filter: true,
-      showRequestDuration: true,
-    },
-    customSiteTitle: 'E-commerce API Documentation',
-  });
+  SwaggerModule.setup('api', app, document);
   
   // Validación global de DTOs
   app.useGlobalPipes(new ValidationPipe({
@@ -58,6 +39,6 @@ async function bootstrap() {
   const port = process.env.PORT || 3000;
   await app.listen(port);
   console.log(`Application running on port ${port}`);
-  console.log(`Swagger documentation available at: ${await app.getUrl()}/docs`);
+  console.log(`Swagger documentation available at: ${await app.getUrl()}/api`);
 }
 bootstrap();
