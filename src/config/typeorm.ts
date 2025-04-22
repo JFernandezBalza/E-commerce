@@ -17,6 +17,7 @@ const config = {
   logging: true,
   entities: ['dist/**/*.entity{.ts,.js}'],
   migrations: ['dist/migrations/*{.ts,.js}'],
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
 };
 
 export default registerAs(`typeOrmConfig`, () => config);
