@@ -26,4 +26,4 @@ services:
       - key: JWT_SECRET
         sync: false
       - key: SSL_MODE
-        value: "require"
+        value: require
